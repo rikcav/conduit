@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ArticleService {
@@ -23,6 +24,10 @@ public class ArticleService {
     public Article createArticle(ArticleDTO articleDTO) {
         var article = dtoToEntity(articleDTO);
         return articleRepository.save(article);
+    }
+
+    public List<Article> findAll() {
+        return articleRepository.findAll();
     }
 
     public Article findBySlug(String slug) {
