@@ -3,6 +3,7 @@ package com.project.conduit.service;
 import com.project.conduit.dto.create.ArticleDTO;
 import com.project.conduit.model.Article;
 import com.project.conduit.repository.ArticleRepository;
+import com.project.conduit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +12,12 @@ import java.time.LocalDateTime;
 @Service
 public class ArticleService {
     private final ArticleRepository articleRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ArticleService(ArticleRepository articleRepository) {
+    public ArticleService(ArticleRepository articleRepository, UserRepository userRepository) {
         this.articleRepository = articleRepository;
+        this.userRepository = userRepository;
     }
 
     public Article createArticle(ArticleDTO articleDTO) {
@@ -41,15 +44,17 @@ public class ArticleService {
     }
 
     private Article dtoToEntity(ArticleDTO articleDTO) {
+        var author = userRepository.findById(articleDTO.authorId()).orElseThrow(() -> new RuntimeException("User not found"));
         var article = new Article();
 
-        article.setSlug(article.getSlug());
-        article.setTitle(article.getTitle());
-        article.setDescription(article.getDescription());
-        article.setBody(article.getBody());
+        article.setSlug(articleDTO.slug());
+        article.setTitle(articleDTO.title());
+        article.setDescription(articleDTO.description());
+        article.setBody(articleDTO.body());
         article.setUpdatedAt(LocalDateTime.now());
-        article.setFavorited(article.isFavorited());
-        article.setFavoritesCount(article.getFavoritesCount());
+        article.setFavorited(articleDTO.favorited());
+        article.setFavoritesCount(articleDTO.favoritesCount());
+        article.setAuthor(author);
 
         return article;
     }
