@@ -22,7 +22,6 @@ public class Article {
     @Column(nullable = false)
     private String description;
 
-    @Lob
     @Column(nullable = false)
     private String body;
 

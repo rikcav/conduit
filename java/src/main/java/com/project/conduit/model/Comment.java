@@ -16,7 +16,6 @@ public class Comment {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Lob
     @Column(nullable = false)
     private String body;
 
