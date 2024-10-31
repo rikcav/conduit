@@ -2,13 +2,12 @@ package com.project.conduit.controller;
 
 import com.project.conduit.dto.create.CommentDTO;
 import com.project.conduit.dto.view.CommentRO;
+import com.project.conduit.dto.view.CommentsRO;
 import com.project.conduit.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/articles/{slug}/comments")
@@ -27,7 +26,7 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CommentRO>> getCommentsForArticle(@PathVariable String slug) {
+    public ResponseEntity<CommentsRO> getCommentsForArticle(@PathVariable String slug) {
         var commentsRO = commentService.getCommentsByArticleSlug(slug);
         return ResponseEntity.status(HttpStatus.OK).body(commentsRO);
     }

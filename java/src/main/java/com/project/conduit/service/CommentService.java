@@ -2,6 +2,7 @@ package com.project.conduit.service;
 
 import com.project.conduit.dto.create.CommentDTO;
 import com.project.conduit.dto.view.CommentRO;
+import com.project.conduit.dto.view.CommentsRO;
 import com.project.conduit.model.Comment;
 import com.project.conduit.repository.ArticleRepository;
 import com.project.conduit.repository.CommentRepository;
@@ -35,10 +36,12 @@ public class CommentService {
         return entityToRo(savedComment);
     }
 
-    public List<CommentRO> getCommentsByArticleSlug(String slug) {
+    public CommentsRO getCommentsByArticleSlug(String slug) {
         var article = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
 
-        return commentRepository.findAllByArticleId(article.getId()).stream().map(this::entityToRo).toList();
+        var comments = commentRepository.findAllByArticleId(article.getId());
+
+        return entitiesToRo(comments);
     }
 
     public void deleteComment(String slug, Long commentId) {
@@ -63,7 +66,7 @@ public class CommentService {
                 comment.getAuthor().getUsername(),
                 comment.getAuthor().getBio(),
                 comment.getAuthor().getImage(),
-                false // Assuming you populate this field based on user relationship
+                false
         );
 
         CommentRO.CommentDetails commentDetails = new CommentRO.CommentDetails(
@@ -74,5 +77,27 @@ public class CommentService {
                 authorDetails
         );
         return new CommentRO(commentDetails);
+    }
+
+    private CommentsRO entitiesToRo(List<Comment> comments) {
+        List<CommentRO.CommentDetails> commentDetailsList = comments.stream()
+                .map(comment -> {
+                    CommentRO.AuthorDetails authorDetails = new CommentRO.AuthorDetails(
+                            comment.getAuthor().getUsername(),
+                            comment.getAuthor().getBio(),
+                            comment.getAuthor().getImage(),
+                            false // Assuming you populate this based on the current user's relationship
+                    );
+
+                    return new CommentRO.CommentDetails(
+                            comment.getId(),
+                            comment.getCreatedAt(),
+                            comment.getUpdatedAt(),
+                            comment.getBody(),
+                            authorDetails
+                    );
+                }).toList();
+
+        return new CommentsRO(commentDetailsList);
     }
 }
