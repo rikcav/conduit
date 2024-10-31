@@ -1,6 +1,8 @@
 package com.project.conduit.service;
 
 import com.project.conduit.dto.create.ArticleDTO;
+import com.project.conduit.dto.view.ArticleRO;
+import com.project.conduit.dto.view.ArticlesRO;
 import com.project.conduit.model.Article;
 import com.project.conduit.repository.ArticleRepository;
 import com.project.conduit.repository.UserRepository;
@@ -21,26 +23,33 @@ public class ArticleService {
         this.userRepository = userRepository;
     }
 
-    public Article createArticle(ArticleDTO articleDTO) {
+    public ArticleRO createArticle(ArticleDTO articleDTO) {
         var article = dtoToEntity(articleDTO);
-        return articleRepository.save(article);
+        var savedArticle = articleRepository.save(article);
+
+        return entityToRo(savedArticle);
     }
 
-    public List<Article> findAll() {
-        return articleRepository.findAll();
+    public ArticlesRO findAll() {
+        var articles = articleRepository.findAll();
+
+        return entitiesToRo(articles);
     }
 
-    public Article findBySlug(String slug) {
-        return articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
+    public ArticleRO findBySlug(String slug) {
+        var article = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
+        return entityToRo(article);
     }
 
-    public Article updateArticle(String slug, ArticleDTO articleDTO) {
+    public ArticleRO updateArticle(String slug, ArticleDTO articleDTO) {
         var savedArticle = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
 
         var updatedArticle = dtoToEntity(articleDTO);
         updatedArticle.setId(savedArticle.getId());
 
-        return articleRepository.save(updatedArticle);
+        var article = articleRepository.save(updatedArticle);
+
+        return entityToRo(article);
     }
 
     public void deleteArticle(String slug) {
@@ -62,5 +71,56 @@ public class ArticleService {
         article.setAuthor(author);
 
         return article;
+    }
+
+    private ArticleRO entityToRo(Article article) {
+        ArticleRO.AuthorDetails authorDetails = new ArticleRO.AuthorDetails(
+                article.getAuthor().getUsername(),
+                article.getAuthor().getBio(),
+                article.getAuthor().getImage(),
+                false
+        );
+
+        ArticleRO.ArticleDetails articleDetails = new ArticleRO.ArticleDetails(
+                article.getSlug(),
+                article.getTitle(),
+                article.getDescription(),
+                article.getBody(),
+                article.getTagList(),
+                article.getCreatedAt(),
+                article.getUpdatedAt(),
+                false,
+                article.getFavoritesCount(),
+                authorDetails
+        );
+
+        return new ArticleRO(articleDetails);
+    }
+
+    private ArticlesRO entitiesToRo(List<Article> articles) {
+        List<ArticleRO.ArticleDetails> articleDetailsList = articles.stream()
+                .map(article -> {
+                    ArticleRO.AuthorDetails authorDetails = new ArticleRO.AuthorDetails(
+                            article.getAuthor().getUsername(),
+                            article.getAuthor().getBio(),
+                            article.getAuthor().getImage(),
+                            false
+                    );
+
+                    return new ArticleRO.ArticleDetails(
+                            article.getSlug(),
+                            article.getTitle(),
+                            article.getDescription(),
+                            article.getBody(),
+                            article.getTagList(),
+                            article.getCreatedAt(),
+                            article.getUpdatedAt(),
+                            false,
+                            article.getFavoritesCount(),
+                            authorDetails
+                    );
+                }).toList();
+
+        return new ArticlesRO(articleDetailsList, articleDetailsList.size());
     }
 }

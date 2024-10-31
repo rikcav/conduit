@@ -1,14 +1,14 @@
 package com.project.conduit.controller;
 
 import com.project.conduit.dto.create.ArticleDTO;
+import com.project.conduit.dto.view.ArticleRO;
+import com.project.conduit.dto.view.ArticlesRO;
 import com.project.conduit.model.Article;
 import com.project.conduit.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -21,25 +21,25 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ResponseEntity<Article> createArticle(@RequestBody ArticleDTO articleDTO) {
+    public ResponseEntity<ArticleRO> createArticle(@RequestBody ArticleDTO articleDTO) {
         var articleCreated = articleService.createArticle(articleDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(articleCreated);
     }
 
     @GetMapping
-    public ResponseEntity<List<Article>> findAll() {
+    public ResponseEntity<ArticlesRO> findAll() {
         var articles = articleService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
 
     @GetMapping("{slug}")
-    public ResponseEntity<Article> findBySlug(@PathVariable String slug) {
+    public ResponseEntity<ArticleRO> findBySlug(@PathVariable String slug) {
         var articleFound = articleService.findBySlug(slug);
         return ResponseEntity.status(HttpStatus.OK).body(articleFound);
     }
 
     @PutMapping("{slug}")
-    public ResponseEntity<Article> updateArticle(@PathVariable String slug, @RequestBody ArticleDTO articleDTO) {
+    public ResponseEntity<ArticleRO> updateArticle(@PathVariable String slug, @RequestBody ArticleDTO articleDTO) {
         var articleUpdated = articleService.updateArticle(slug, articleDTO);
         return ResponseEntity.status(HttpStatus.OK).body(articleUpdated);
     }
