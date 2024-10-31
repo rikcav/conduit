@@ -86,7 +86,7 @@ public class CommentService {
                             comment.getAuthor().getUsername(),
                             comment.getAuthor().getBio(),
                             comment.getAuthor().getImage(),
-                            false // Assuming you populate this based on the current user's relationship
+                            false
                     );
 
                     return new CommentRO.CommentDetails(
