@@ -10,6 +10,7 @@ import com.project.conduit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,6 +27,11 @@ public class ArticleService {
 
     public ArticleRO createArticle(ArticleDTO articleDTO) {
         var article = dtoToEntity(articleDTO);
+
+        var author = userRepository.findAll().get(0);
+
+        article.setAuthor(author);
+
         var savedArticle = articleRepository.save(article);
 
         return entityToRo(savedArticle);
@@ -62,18 +68,13 @@ public class ArticleService {
     }
 
     private Article dtoToEntity(ArticleDTO articleDTO) {
-        var author = userRepository.findById(articleDTO.authorId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         var article = new Article();
 
-        article.setSlug(articleDTO.slug());
-        article.setTitle(articleDTO.title());
-        article.setDescription(articleDTO.description());
-        article.setBody(articleDTO.body());
+        article.setSlug(titleToSlug(articleDTO.article().title()));
+        article.setTitle(articleDTO.article().title());
+        article.setDescription(articleDTO.article().description());
+        article.setBody(articleDTO.article().body());
         article.setUpdatedAt(LocalDateTime.now());
-        article.setFavorited(articleDTO.favorited());
-        article.setFavoritesCount(articleDTO.favoritesCount());
-        article.setAuthor(author);
 
         return article;
     }
@@ -127,5 +128,19 @@ public class ArticleService {
                 }).toList();
 
         return new ArticlesRO(articleDetailsList, articleDetailsList.size());
+    }
+
+    private String titleToSlug(String title) {
+        if (title == null) {
+            return "";
+        }
+
+        String normalized = Normalizer.normalize(title, Normalizer.Form.NFD);
+
+        return normalized
+                .replaceAll("[^\\p{Alnum} ]", "")
+                .trim()
+                .replaceAll("\\s+", "-")
+                .toLowerCase();
     }
 }
