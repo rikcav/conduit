@@ -1,5 +1,6 @@
 package com.project.conduit.controller;
 
+import com.project.conduit.dto.create.UserDTO;
 import com.project.conduit.model.User;
 import com.project.conduit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        var savedUser = userService.registerUser(user);
+    public ResponseEntity<User> registerUser(@RequestBody UserDTO userDTO) {
+        var savedUser = userService.registerUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
