@@ -3,6 +3,7 @@ package com.project.conduit.service;
 import com.project.conduit.dto.create.ArticleDTO;
 import com.project.conduit.dto.view.ArticleRO;
 import com.project.conduit.dto.view.ArticlesRO;
+import com.project.conduit.exception.ResourceNotFoundException;
 import com.project.conduit.model.Article;
 import com.project.conduit.repository.ArticleRepository;
 import com.project.conduit.repository.UserRepository;
@@ -37,12 +38,14 @@ public class ArticleService {
     }
 
     public ArticleRO findBySlug(String slug) {
-        var article = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
+        var article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         return entityToRo(article);
     }
 
     public ArticleRO updateArticle(String slug, ArticleDTO articleDTO) {
-        var savedArticle = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
+        var savedArticle = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
 
         var updatedArticle = dtoToEntity(articleDTO);
         updatedArticle.setId(savedArticle.getId());
@@ -53,12 +56,14 @@ public class ArticleService {
     }
 
     public void deleteArticle(String slug) {
-        var savedArticle = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
+        var savedArticle = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         articleRepository.delete(savedArticle);
     }
 
     private Article dtoToEntity(ArticleDTO articleDTO) {
-        var author = userRepository.findById(articleDTO.authorId()).orElseThrow(() -> new RuntimeException("User not found"));
+        var author = userRepository.findById(articleDTO.authorId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         var article = new Article();
 
         article.setSlug(articleDTO.slug());

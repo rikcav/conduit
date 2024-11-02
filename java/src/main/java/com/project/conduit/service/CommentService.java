@@ -3,6 +3,7 @@ package com.project.conduit.service;
 import com.project.conduit.dto.create.CommentDTO;
 import com.project.conduit.dto.view.CommentRO;
 import com.project.conduit.dto.view.CommentsRO;
+import com.project.conduit.exception.ResourceNotFoundException;
 import com.project.conduit.model.Comment;
 import com.project.conduit.repository.ArticleRepository;
 import com.project.conduit.repository.CommentRepository;
@@ -26,7 +27,8 @@ public class CommentService {
     }
 
     public CommentRO addCommentToArticle(String slug, CommentDTO commentDTO) {
-        var article = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
+        var article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
 
         var comment = dtoToEntity(commentDTO);
         comment.setArticle(article);
@@ -37,7 +39,8 @@ public class CommentService {
     }
 
     public CommentsRO getCommentsByArticleSlug(String slug) {
-        var article = articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
+        var article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
 
         var comments = commentRepository.findAllByArticleId(article.getId());
 
@@ -45,13 +48,16 @@ public class CommentService {
     }
 
     public void deleteComment(String slug, Long commentId) {
-        articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Article not found"));
-        var comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("Comment not found"));
+        articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+        var comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         commentRepository.delete(comment);
     }
 
     private Comment dtoToEntity(CommentDTO commentDTO) {
-        var author = userRepository.findByUsername(commentDTO.authorUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+        var author = userRepository.findByUsername(commentDTO.authorUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Comment comment = new Comment();
 

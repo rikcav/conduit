@@ -1,5 +1,6 @@
 package com.project.conduit.service;
 
+import com.project.conduit.exception.ResourceNotFoundException;
 import com.project.conduit.model.User;
 import com.project.conduit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,8 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     public User registerUser(User user) {
