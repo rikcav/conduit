@@ -5,9 +5,12 @@ import com.project.conduit.dto.view.ArticleRO;
 import com.project.conduit.dto.view.ArticlesRO;
 import com.project.conduit.exception.ResourceNotFoundException;
 import com.project.conduit.model.Article;
+import com.project.conduit.model.User;
 import com.project.conduit.repository.ArticleRepository;
 import com.project.conduit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -37,8 +40,10 @@ public class ArticleService {
         return entityToRo(savedArticle);
     }
 
-    public ArticlesRO findAll() {
-        var articles = articleRepository.findAll();
+    public ArticlesRO findAll(int limit, int offset) {
+        Pageable pageable = PageRequest.of(offset / limit, limit);
+
+        var articles = articleRepository.findAll(pageable).getContent();
 
         return entitiesToRo(articles);
     }
@@ -55,6 +60,7 @@ public class ArticleService {
 
         var updatedArticle = dtoToEntity(articleDTO);
         updatedArticle.setId(savedArticle.getId());
+        updatedArticle.setAuthor(savedArticle.getAuthor());
 
         var article = articleRepository.save(updatedArticle);
 
@@ -65,6 +71,26 @@ public class ArticleService {
         var savedArticle = articleRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
         articleRepository.delete(savedArticle);
+    }
+
+    public ArticleRO favoriteArticle(String slug, User user) {
+        var article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+
+        article.addFavorite(user);
+        var savedArticle = articleRepository.save(article);
+
+        return entityToRo(savedArticle);
+    }
+
+    public ArticleRO unFavoriteArticle(String slug, User user) {
+        var article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+
+        article.removeFavorite(user);
+        var savedArticle = articleRepository.save(article);
+
+        return entityToRo(savedArticle);
     }
 
     private Article dtoToEntity(ArticleDTO articleDTO) {
