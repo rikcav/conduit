@@ -3,8 +3,9 @@ package com.project.conduit.controller;
 import com.project.conduit.dto.create.ArticleDTO;
 import com.project.conduit.dto.view.ArticleRO;
 import com.project.conduit.dto.view.ArticlesRO;
+import com.project.conduit.model.User;
+import com.project.conduit.repository.UserRepository;
 import com.project.conduit.service.ArticleService;
-import com.project.conduit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +17,12 @@ import java.util.Optional;
 @RequestMapping("/api/articles")
 public class ArticleController {
     private final ArticleService articleService;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ArticleController(ArticleService articleService, UserService userService) {
+    public ArticleController(ArticleService articleService, UserRepository userRepository) {
         this.articleService = articleService;
-        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
@@ -56,15 +57,20 @@ public class ArticleController {
 
     @PostMapping("{slug}/favorite")
     public ResponseEntity<ArticleRO> favoriteArticle(@PathVariable String slug) {
-        var user = userService.findByUsername("henrique");
+        var user = getCurrentUser();
         var favoritedArticle = articleService.favoriteArticle(slug, user);
         return ResponseEntity.status(HttpStatus.OK).body(favoritedArticle);
     }
 
     @DeleteMapping("{slug}/favorite")
     public ResponseEntity<ArticleRO> unfavoriteArticle(@PathVariable String slug) {
-        var user = userService.findByUsername("henrique");
+        var user = getCurrentUser();
         var unfavoritedArticle = articleService.unFavoriteArticle(slug, user);
         return ResponseEntity.status(HttpStatus.OK).body(unfavoritedArticle);
+    }
+
+    private User getCurrentUser() {
+        return userRepository.findByUsername("henrique")
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
