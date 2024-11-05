@@ -3,6 +3,7 @@ package com.project.conduit.controller;
 import com.project.conduit.dto.create.ArticleDTO;
 import com.project.conduit.dto.view.ArticleRO;
 import com.project.conduit.dto.view.ArticlesRO;
+import com.project.conduit.model.User;
 import com.project.conduit.service.ArticleService;
 import com.project.conduit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
