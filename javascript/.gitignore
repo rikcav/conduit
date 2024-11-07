@@ -1,0 +1,22 @@
+Quickly and easily fetch .gitignore templates from www.gitignore.io
+
+Usage: git-ignore [OPTIONS] [TEMPLATES]...
+       git-ignore <COMMAND>
+
+Commands:
+  alias       Manage local templates
+  template    Manage local aliases
+  init        Initialize user configuration
+  completion  Generate shell completion
+  help        Print this message or the help of the given subcommand(s)
+
+Arguments:
+  [TEMPLATES]...  Names of templates to show/search for
+
+Options:
+  -l, --list     List <templates> or all available templates
+  -u, --update   Update templates by fetching them from gitignore.io
+  -s, --simple   Ignore all user defined aliases and templates
+  -a, --auto     Autodetect templates based on the existing files
+  -h, --help     Print help
+  -V, --version  Print version
