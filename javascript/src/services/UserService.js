@@ -1,4 +1,4 @@
-const repository = require("../repositories/userRepository");
+const repository = require("../repositories/UserRepository");
 
 module.exports = {
   registerUser: async (data) => {

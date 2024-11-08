@@ -1,4 +1,4 @@
-const controller = require("../controllers/userController");
+const controller = require("../controllers/UserController");
 
 module.exports = {
   userRoutes: (app) => {
