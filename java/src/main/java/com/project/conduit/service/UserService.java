@@ -1,12 +1,14 @@
 package com.project.conduit.service;
 
 import com.project.conduit.dto.create.UserDTO;
+import com.project.conduit.exception.DuplicateResourceException;
 import com.project.conduit.exception.ResourceNotFoundException;
 import com.project.conduit.model.Profile;
 import com.project.conduit.model.User;
 import com.project.conduit.repository.ProfileRepository;
 import com.project.conduit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,10 +32,13 @@ public class UserService {
 
         var profile = userToProfile(user);
 
-        var savedUser = userRepository.save(user);
-        profileRepository.save(profile);
-
-        return savedUser;
+        try {
+            var savedUser = userRepository.save(user);
+            profileRepository.save(profile);
+            return savedUser;
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateResourceException("Username or email already exists");
+        }
     }
 
     private User dtoToEntity(UserDTO userDTO) {
