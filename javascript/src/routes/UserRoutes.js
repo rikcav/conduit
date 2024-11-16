@@ -1,5 +1,5 @@
 const controller = require("../controllers/UserController");
-const { authenticateJWT } = require("../controllers/authMiddlewareController")
+const { authenticateJWT } = require("../controllers/AuthController")
 
 module.exports = {
   userRoutes: (app) => {
