@@ -9,4 +9,16 @@ module.exports = {
 
     return user;
   },
+
+  findUserByEmail: async (email) => {
+    return await prisma.user.findUnique({
+      where: { email },
+    });
+  },
+
+  findUserById: async (id) => {
+    return await prisma.user.findUnique({
+      where: { id },
+    });
+  },
 };
