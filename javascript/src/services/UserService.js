@@ -11,9 +11,11 @@ module.exports = {
         image: data.image,
       });
     } catch (error) {
-      if (error.code === 'P2002') {
+      if (error.code === "P2002") {
         const duplicateField = error.meta.target[0];
-        throw new Error(`Duplicate ${duplicateField}: This ${duplicateField} is already taken.`);
+        throw new Error(
+          `Duplicate ${duplicateField}: This ${duplicateField} is already taken.`
+        );
       }
 
       throw error;
@@ -21,10 +23,18 @@ module.exports = {
   },
 
   findUserByEmail: async (email) => {
-    return await userRepository.findUserByEmail(email);
+    try {
+      return await userRepository.findUserByEmail(email);
+    } catch (error) {
+      throw error;
+    }
   },
 
   findUserById: async (id) => {
-    return await userRepository.findUserById(id);
+    try {
+      return await userRepository.findUserById(id);
+    } catch (error) {
+      throw error;
+    }
   },
 };
