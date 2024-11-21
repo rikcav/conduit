@@ -20,7 +20,11 @@ module.exports = {
       where: { slug },
     });
 
-    return article;
+    if (article) {
+      return article;
+    }
+
+    throw "Could not find article with slug: " + slug;
   },
 
   updateArticle: async (id, data) => {
