@@ -15,6 +15,24 @@ module.exports = {
     return articles;
   },
 
+  getFeed: async (userId, limit, offset) => {
+    // Fetch IDs of followed users
+    const followedUsers = await prisma.follow.findMany({
+      where: { followerId: userId },
+      select: { followingId: true },
+    });
+
+    const followedUserIds = followedUsers.map((f) => f.followingId);
+
+    // Fetch articles created by followed users
+    return await prisma.article.findMany({
+      where: { authorId: { in: followedUserIds } },
+      take: limit,
+      skip: offset,
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
   findBySlug: async (slug) => {
     const article = await prisma.article.findUnique({
       where: { slug },
@@ -27,9 +45,9 @@ module.exports = {
     throw "Could not find article with slug: " + slug;
   },
 
-  updateArticle: async (id, data) => {
+  updateArticle: async (slug, data) => {
     const article = await prisma.article.update({
-      where: { id },
+      where: { slug },
       data,
     });
 

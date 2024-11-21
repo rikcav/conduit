@@ -32,6 +32,14 @@ module.exports = {
     }
   },
 
+  feedArticles: async (userId, limit, offset) => {
+    try {
+      return await articleRepository.getFeed(userId, limit, offset);
+    } catch (error) {
+      throw error;
+    }
+  },
+
   findBySlug: async (slug) => {
     try {
       return await articleRepository.findBySlug(slug);
@@ -40,9 +48,9 @@ module.exports = {
     }
   },
 
-  updateArticle: async (id, data, userId) => {
+  updateArticle: async (slug, data, userId) => {
     try {
-      return await articleRepository.updateArticle(id, {
+      return await articleRepository.updateArticle(slug, {
         slug: titleToSlug(data.title),
         title: data.title,
         description: data.description,
@@ -55,12 +63,20 @@ module.exports = {
     }
   },
 
-  deleteArticle: async (id) => {
-    try {
-      return await articleRepository.deleteArticle(id);
-    } catch (error) {
-      throw error;
+  deleteArticle: async (slug, userId) => {
+    const article = await articleRepository.findBySlug(slug);
+
+    if (!article) {
+      throw new Error("Article not found");
     }
+
+    // Check if the current user is the author of the article
+    if (article.authorId !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    // Delete the article
+    return await articleRepository.deleteArticle(slug);
   },
 };
 
