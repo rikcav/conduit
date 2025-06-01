@@ -9,7 +9,7 @@ from .serializers import TagSerializer
 
 
 def normalize_string(s):
-    """Convert to lowercase, replace spaces with underscores, and remove non-ASCII characters."""
+    # Convert to lowercase, replace spaces with underscores, and remove non-ASCII characters.
     s = s.lower().replace(" ", "_")
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
     return s
@@ -17,18 +17,13 @@ def normalize_string(s):
 
 @api_view(["GET", "POST"])
 def tag_list(request):
-    """Handle listing all tags and creating new tags.
-
-    Routes:
-        GET  /api/tags/     -> List all tags
-        POST /api/tags/     -> Create a new tag
-    """
+    # GET ALL
     if request.method == "GET":
         tags = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-        # POST
+    # POST
     data = {
         key: normalize_string(value) if isinstance(value, str) else value
         for key, value in request.data.items()
@@ -43,12 +38,7 @@ def tag_list(request):
 
 @api_view(["GET", "DELETE"])
 def tag_detail(request, pk):
-    """Handle retrieving or deleting a single tag.
-
-    Routes:
-        GET    /api/tags/<pk>/  -> Get one tag by id
-        DELETE /api/tags/<pk>/  -> Delete the tag
-    """
+    # GET ONE
     tag = get_object_or_404(Tag, pk=pk)
 
     if request.method == "GET":
