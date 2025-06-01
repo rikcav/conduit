@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class User(models.Model):
     username = models.CharField(max_length=150, unique=True, null=False)
@@ -13,6 +14,7 @@ class User(models.Model):
         Email: {self.email};
         Password: {self.password};
         """
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=64, unique=True)
