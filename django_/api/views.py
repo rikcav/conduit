@@ -2,9 +2,17 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import unicodedata
 
 from .models import Tag
 from .serializers import TagSerializer
+
+
+def normalize_string(s):
+    """Convert to lowercase, replace spaces with underscores, and remove non-ASCII characters."""
+    s = s.lower().replace(" ", "_")
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
+    return s
 
 
 @api_view(["GET", "POST"])
@@ -20,8 +28,13 @@ def tag_list(request):
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # POST
-    serializer = TagSerializer(data=request.data)
+        # POST
+    data = {
+        key: normalize_string(value) if isinstance(value, str) else value
+        for key, value in request.data.items()
+    }
+
+    serializer = TagSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
