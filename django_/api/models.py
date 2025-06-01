@@ -13,3 +13,9 @@ class User(models.Model):
         Email: {self.email};
         Password: {self.password};
         """
+
+class Tag(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return self.name
