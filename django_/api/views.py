@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import unicodedata
 
-from .models import User, Tag
-from .serializers import UserSerializer, TagSerializer
+from .models import User, Tag, Article
+from .serializers import UserSerializer, TagSerializer, ArticleSerializer
 
 
 # TAGS
@@ -87,3 +87,24 @@ def user_detail(request, pk):
     # DELETE
     user.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["GET", "POST"])
+def article_list(request):
+    # GET ALL
+    if request.method == "GET":
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # POST
+    data = {
+        key: normalize_string(value) if isinstance(value, str) else value
+        for key, value in request.data.items()
+    }
+
+    serializer = ArticleSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
