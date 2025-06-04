@@ -154,3 +154,24 @@ def comment_from_article_list(request, slug):
     comments = article.comments.all()
     serializer = CommentSerializer(comments, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+def comment_detail(request, pk):
+    # GET ONE
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if request.method == "GET":
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == "PUT":
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # DELETE
+    comment.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)

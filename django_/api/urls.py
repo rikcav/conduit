@@ -8,6 +8,7 @@ from .views import (
     article_detail,
     comment_list,
     comment_from_article_list,
+    comment_detail,
 )
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
 
     path("comments", comment_list, name="comment-list"),
     path("articles/<str:slug>/comments", comment_from_article_list, name="comment-from-article-list"),
+    path("comments/<int:pk>", comment_detail, name="comment-detail"),
 ]
