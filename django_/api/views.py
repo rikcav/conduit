@@ -98,13 +98,29 @@ def article_list(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # POST
-    data = {
-        key: normalize_string(value) if isinstance(value, str) else value
-        for key, value in request.data.items()
-    }
-
-    serializer = ArticleSerializer(data=data)
+    serializer = ArticleSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+def article_detail(request, slug):
+    # GET ONE
+    article = get_object_or_404(Article, slug=slug)
+
+    if request.method == "GET":
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == "PUT":
+        serializer = ArticleSerializer(article, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # DELETE
+    article.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
