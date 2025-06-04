@@ -4,8 +4,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import unicodedata
 
-from .models import User, Tag, Article
-from .serializers import UserSerializer, TagSerializer, ArticleSerializer
+from .models import User, Tag, Article, Comment
+from .serializers import (
+    UserSerializer,
+    TagSerializer,
+    ArticleSerializer,
+    CommentSerializer,
+)
 
 
 # TAGS
@@ -124,3 +129,28 @@ def article_detail(request, slug):
     # DELETE
     article.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["GET", "POST"])
+def comment_list(request):
+    # GET ALL
+    if request.method == "GET":
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # POST
+    serializer = CommentSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def comment_from_article_list(request, slug):
+    # GET ALL COMMENTS FROM ARTICLE
+    article = get_object_or_404(Article, slug=slug)
+    comments = article.comments.all()
+    serializer = CommentSerializer(comments, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
