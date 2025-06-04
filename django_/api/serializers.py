@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Tag, Article
+from .models import User, Tag, Article, Comment
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -17,4 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
+        fields = "__all__"
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
         fields = "__all__"

@@ -64,3 +64,21 @@ class Article(models.Model):
         Favorited: {self.favorited};
         FavoritesCount: {self.favoritesCount};
         """
+
+
+class Comment(models.Model):
+    body = models.TextField(null=False)
+    createdAt = models.DateTimeField(default=timezone.now)
+    updatedAt = models.DateTimeField(default=timezone.now)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    article = models.ForeignKey(
+        Article, on_delete=models.CASCADE, related_name="comments"
+    )
+
+    def __str__(self):
+        return f"""
+        ID: {self.id};
+        Body: {self.body};
+        CreatedAt: {self.createdAt};
+        UpdatedAt: {self.updatedAt};
+        """
