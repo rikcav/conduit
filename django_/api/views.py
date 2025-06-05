@@ -131,6 +131,29 @@ def article_detail(request, slug):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(["POST", "DELETE"])
+def article_favorite(request, slug):
+    # POST (FAVORITE)
+    article = get_object_or_404(Article, slug=slug)
+    if request.method == "POST":
+        article.favorited = True
+        article.favoritesCount += 1
+        article.save()
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # DELETE (UNFAVORITE)
+    if request.method == "DELETE":
+        if article.favoritesCount > 0:
+            article.favoritesCount -= 1
+            if article.favoritesCount == 0:
+                article.favorited = False
+        article.save()
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(["GET", "POST"])
 def comment_list(request):
     # GET ALL
