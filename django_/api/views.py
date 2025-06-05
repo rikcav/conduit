@@ -21,39 +21,14 @@ def normalize_string(s):
     return s
 
 
-@api_view(["GET", "POST"])
+@api_view(["GET"])
 def tag_list(request):
     # GET ALL
     if request.method == "GET":
         tags = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # POST
-    data = {
-        key: normalize_string(value) if isinstance(value, str) else value
-        for key, value in request.data.items()
-    }
-
-    serializer = TagSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["GET", "DELETE"])
-def tag_detail(request, pk):
-    # GET ONE
-    tag = get_object_or_404(Tag, pk=pk)
-
-    if request.method == "GET":
-        serializer = TagSerializer(tag)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # DELETE
-    tag.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # USERS
@@ -103,10 +78,22 @@ def article_list(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # POST
-    serializer = ArticleSerializer(data=request.data)
+    data = request.data.copy()
+    tags = data.get("tagList", [])
+
+    if isinstance(tags, list):
+        normalized_tags = []
+        for tag_name in tags:
+            normalized_name = normalize_string(tag_name)
+            Tag.objects.get_or_create(name=normalized_name)
+            normalized_tags.append(normalized_name)
+        data["tagList"] = normalized_tags
+
+    serializer = ArticleSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
