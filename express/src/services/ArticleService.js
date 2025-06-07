@@ -32,13 +32,14 @@ module.exports = {
     }
   },
 
-  // updateArticle: async (slug, data) => {
-  //   try {
-  //     return await articleRepository.updateArticle(slug, data);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
+  updateArticle: async (slug, data) => {
+    const { tagList = [], ...articleData } = data;
+
+    return await articleRepository.updateArticle(slug, {
+      ...articleData,
+      tagList,
+    });
+  },
 
   deleteArticle: async (slug) => {
     try {

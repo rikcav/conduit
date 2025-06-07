@@ -48,18 +48,20 @@ module.exports = {
     }
   },
 
-  // updateArticle: async (req, res) => {
-  //   try {
-  //     const slug = req.params.slug;
-  //     const article = await articleService.updateArticle(slug, req.body);
-  //     if (!article) {
-  //       return res.status(404).json({ message: "Article not found" });
-  //     }
-  //     return res.status(200).json(article);
-  //   } catch (error) {
-  //     return res.status(500).json({ message: "Error updating article", error });
-  //   }
-  // },
+  updateArticle: async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const updated = await articleService.updateArticle(slug, req.body);
+
+      if (!updated) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+
+      return res.status(200).json(updated);
+    } catch (error) {
+      return res.status(500).json({ message: "Error updating article", error });
+    }
+  },
 
   deleteArticle: async (req, res) => {
     try {

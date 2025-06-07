@@ -37,9 +37,25 @@ module.exports = {
   },
 
   updateArticle: async (slug, data) => {
+    const { tagList, ...articleData } = data;
+
     return await prisma.article.update({
       where: { slug },
-      data,
+      data: {
+        ...articleData,
+        ...(tagList && {
+          tagList: {
+            set: [],
+            connectOrCreate: tagList.map((tag) => ({
+              where: { name: tag },
+              create: { name: tag },
+            })),
+          },
+        }),
+      },
+      include: {
+        tagList: true,
+      },
     });
   },
 
