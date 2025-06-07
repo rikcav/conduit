@@ -12,14 +12,26 @@ module.exports = {
     }
   },
 
-  // createArticle: async (req, res) => {
-  //   try {
-  //     const article = await articleService.createArticle(req.body);
-  //     return res.status(201).json(article);
-  //   } catch (error) {
-  //     return res.status(500).json({ message: "Error creating article", error });
-  //   }
-  // },
+  createArticle: async (req, res) => {
+    try {
+      const { title, description, body, tagList, authorId } = req.body;
+      if (!title || !description || !body || !authorId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const data = await articleService.createArticle({
+        title,
+        description,
+        body,
+        tagList,
+        authorId,
+      });
+
+      return res.status(201).json(data);
+    } catch (error) {
+      return res.status(500).json({ message: "Error creating article", error });
+    }
+  },
 
   findArticleBySlug: async (req, res) => {
     try {

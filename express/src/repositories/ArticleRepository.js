@@ -10,12 +10,21 @@ module.exports = {
     });
   },
 
-  createArticle: async (data) => {
-    const article = await prisma.article.create({
-      data,
+  createArticle: async ({ tagList, ...articleData }) => {
+    return await prisma.article.create({
+      data: {
+        ...articleData,
+        tagList: {
+          connectOrCreate: tagList.map((tag) => ({
+            where: { name: tag },
+            create: { name: tag },
+          })),
+        },
+      },
+      include: {
+        tagList: true,
+      },
     });
-
-    return article;
   },
 
   findArticleBySlug: async (slug) => {

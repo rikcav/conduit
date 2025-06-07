@@ -9,17 +9,20 @@ module.exports = {
     }
   },
 
-  // createArticle: async (data) => {
-  //   try {
-  //     return await articleRepository.createArticle({
-  //       title: data.title,
-  //       content: data.content,
-  //       authorId: data.authorId,
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
+  createArticle: async (data) => {
+    const slug = data.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    const { tagList = [], ...articleData } = data;
+
+    return await articleRepository.createArticle({
+      ...articleData,
+      slug,
+      tagList,
+    });
+  },
 
   findArticleBySlug: async (slug) => {
     try {
