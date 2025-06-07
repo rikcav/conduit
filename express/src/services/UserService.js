@@ -1,30 +1,21 @@
 const userRepository = require("../repositories/UserRepository");
 
 module.exports = {
-  registerUser: async (data) => {
+  findAllUsers: async () => {
+    try {
+      return await userRepository.findAllUsers();
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  createUser: async (data) => {
     try {
       return await userRepository.registerUser({
         username: data.username,
         email: data.email,
         password: data.password,
-        bio: data.bio,
-        image: data.image,
       });
-    } catch (error) {
-      if (error.code === "P2002") {
-        const duplicateField = error.meta.target[0];
-        throw new Error(
-          `Duplicate ${duplicateField}: This ${duplicateField} is already taken.`
-        );
-      }
-
-      throw error;
-    }
-  },
-
-  findUserByEmail: async (email) => {
-    try {
-      return await userRepository.findUserByEmail(email);
     } catch (error) {
       throw error;
     }
@@ -33,6 +24,22 @@ module.exports = {
   findUserById: async (id) => {
     try {
       return await userRepository.findUserById(id);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateUser: async (id, data) => {
+    try {
+      return await userRepository.updateUser(id, data);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  deleteUser: async (id) => {
+    try {
+      return await userRepository.deleteUser(id);
     } catch (error) {
       throw error;
     }
