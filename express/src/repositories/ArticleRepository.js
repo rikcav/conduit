@@ -3,7 +3,11 @@ const prisma = new PrismaClient();
 
 module.exports = {
   findAllArticles: async () => {
-    return await prisma.article.findMany();
+    return await prisma.article.findMany({
+      include: {
+        tagList: true,
+      },
+    });
   },
 
   createArticle: async (data) => {
@@ -17,6 +21,9 @@ module.exports = {
   findArticleBySlug: async (slug) => {
     return await prisma.article.findUnique({
       where: { slug },
+      include: {
+        tagList: true,
+      },
     });
   },
 
