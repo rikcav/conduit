@@ -11,7 +11,7 @@ module.exports = {
 
   createUser: async (data) => {
     try {
-      return await userRepository.registerUser({
+      return await userRepository.createUser({
         username: data.username,
         email: data.email,
         password: data.password,
