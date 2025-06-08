@@ -1,9 +1,9 @@
-const commentService = require("../repositories/CommentRepository");
+const commentRepository = require("../repositories/CommentRepository");
 
 module.exports = {
   findAllComments: async () => {
     try {
-      return await commentService.findAllComments();
+      return await commentRepository.findAllComments();
     } catch (error) {
       throw error;
     }
@@ -11,7 +11,7 @@ module.exports = {
 
   createComment: async (data) => {
     try {
-      return await commentService.createComment(data);
+      return await commentRepository.createComment(data);
     } catch (error) {
       throw error;
     }
@@ -19,7 +19,31 @@ module.exports = {
 
   findCommentsByArticleSlug: async (slug) => {
     try {
-      return await commentService.findCommentsByArticleSlug(slug);
+      return await commentRepository.findCommentsByArticleSlug(slug);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  findCommentById: async (id) => {
+    try {
+      return await commentRepository.findCommentById(id);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateComment: async (id, data) => {
+    try {
+      return await commentRepository.updateComment(id, data);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  deleteComment: async (id) => {
+    try {
+      return await commentRepository.deleteComment(id);
     } catch (error) {
       throw error;
     }
