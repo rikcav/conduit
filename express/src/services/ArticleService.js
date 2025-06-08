@@ -17,10 +17,18 @@ module.exports = {
 
     const { tagList = [], ...articleData } = data;
 
+    const normalizedTagList = tagList.map((tag) =>
+      tag
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .trim()
+    );
+
     return await articleRepository.createArticle({
       ...articleData,
       slug,
-      tagList,
+      tagList: normalizedTagList,
     });
   },
 
@@ -35,9 +43,17 @@ module.exports = {
   updateArticle: async (slug, data) => {
     const { tagList = [], ...articleData } = data;
 
+    const normalizedTagList = tagList.map((tag) =>
+      tag
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .trim()
+    );
+
     return await articleRepository.updateArticle(slug, {
       ...articleData,
-      tagList,
+      tagList: normalizedTagList,
     });
   },
 
