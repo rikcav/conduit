@@ -1,7 +1,3 @@
-const {
-  favoriteArticle,
-  unfavoriteArticle,
-} = require("../repositories/ArticleRepository");
 const articleService = require("../services/ArticleService");
 
 module.exports = {
