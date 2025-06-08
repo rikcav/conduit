@@ -24,4 +24,14 @@ module.exports = {
   //     res.status(500).json({ error: error.message });
   //   }
   // },
+
+  findCommentsByArticleSlug: async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const comments = await commentService.findCommentsByArticleSlug(slug);
+      res.status(200).json(comments);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };

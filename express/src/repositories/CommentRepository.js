@@ -24,4 +24,14 @@ module.exports = {
       },
     });
   },
+
+  findCommentsByArticleSlug: async (slug) => {
+    return await prisma.comment.findMany({
+      where: {
+        article: {
+          slug: slug,
+        },
+      },
+    });
+  },
 };

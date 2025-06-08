@@ -16,4 +16,12 @@ module.exports = {
       throw error;
     }
   },
+
+  findCommentsByArticleSlug: async (slug) => {
+    try {
+      return await commentService.findCommentsByArticleSlug(slug);
+    } catch (error) {
+      throw error;
+    }
+  },
 };
