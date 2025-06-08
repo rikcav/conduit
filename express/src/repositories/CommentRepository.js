@@ -3,12 +3,7 @@ const prisma = new PrismaClient();
 
 module.exports = {
   findAllComments: async () => {
-    return await prisma.comment.findMany({
-      include: {
-        author: true,
-        article: true,
-      },
-    });
+    return await prisma.comment.findMany();
   },
 
   createComment: async (data) => {
@@ -17,10 +12,6 @@ module.exports = {
         body: data.body,
         articleId: data.articleId,
         authorId: data.authorId,
-      },
-      include: {
-        author: true,
-        article: true,
       },
     });
   },
