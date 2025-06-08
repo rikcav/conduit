@@ -80,18 +80,23 @@ module.exports = {
     });
   },
 
-  // unfavoriteArticle: async (slug, userId) => {
-  //   return await prisma.article.update({
-  //     where: { slug },
-  //     data: {
-  //       favoritesCount: {
-  //         decrement: 1,
-  //       },
-  //       favorited: false,
-  //     },
-  //     include: {
-  //       tagList: true,
-  //     },
-  //   });
-  // },
+  unfavoriteArticle: async (slug) => {
+    const article = await prisma.article.findUnique({
+      where: { slug },
+      select: { favoritesCount: true },
+    });
+
+    const newCount = Math.max(0, article.favoritesCount - 1);
+
+    return await prisma.article.update({
+      where: { slug },
+      data: {
+        favoritesCount: newCount,
+        favorited: newCount === 0 ? false : undefined,
+      },
+      include: {
+        tagList: true,
+      },
+    });
+  },
 };

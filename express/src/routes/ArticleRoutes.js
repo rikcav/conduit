@@ -8,6 +8,6 @@ module.exports = {
     app.put("/api/articles/:slug", controller.updateArticle);
     app.delete("/api/articles/:slug", controller.deleteArticle);
     app.post("/api/articles/:slug/favorite", controller.favoriteArticle);
-    // app.delete("/api/articles/:slug/favorite", controller.unfavoriteArticle);
+    app.delete("/api/articles/:slug/favorite", controller.unfavoriteArticle);
   },
 };

@@ -72,4 +72,12 @@ module.exports = {
       throw error;
     }
   },
+
+  unfavoriteArticle: async (slug) => {
+    try {
+      return await articleRepository.unfavoriteArticle(slug);
+    } catch (error) {
+      throw error;
+    }
+  },
 };
