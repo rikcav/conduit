@@ -25,4 +25,25 @@ module.exports = {
       },
     });
   },
+
+  findCommentById: async (id) => {
+    return await prisma.comment.findUnique({
+      where: { id },
+    });
+  },
+
+  updateComment: async (id, data) => {
+    return await prisma.comment.update({
+      where: { id },
+      data: {
+        body: data.body,
+      },
+    });
+  },
+
+  deleteComment: async (id) => {
+    return await prisma.comment.delete({
+      where: { id },
+    });
+  },
 };
