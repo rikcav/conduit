@@ -13,6 +13,7 @@ model User {
   email    String    @unique
   password String
   articles Article[]
+  comments Comment[]
 }
 
 model Tag {
@@ -22,16 +23,28 @@ model Tag {
 }
 
 model Article {
-  id             Int      @id @default(autoincrement())
-  slug           String   @unique
+  id             Int       @id @default(autoincrement())
+  slug           String    @unique
   title          String
   description    String
   body           String
-  tagList        Tag[]    @relation("ArticleTags")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  author         User     @relation(fields: [authorId], references: [id])
+  tagList        Tag[]     @relation("ArticleTags")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  author         User      @relation(fields: [authorId], references: [id])
   authorId       Int
-  favorited      Boolean  @default(false)
-  favoritesCount Int      @default(0)
+  favorited      Boolean   @default(false)
+  favoritesCount Int       @default(0)
+  comments       Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  article   Article  @relation(fields: [articleId], references: [id])
+  articleId Int
 }
