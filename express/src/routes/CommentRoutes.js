@@ -8,5 +8,8 @@ module.exports = {
       "/api/articles/:slug/comments",
       controller.findCommentsByArticleSlug
     );
+    app.get("/api/comments/:id", controller.findCommentById);
+    app.put("/api/comments/:id", controller.updateComment);
+    app.delete("/api/comments/:id", controller.deleteComment);
   },
 };
