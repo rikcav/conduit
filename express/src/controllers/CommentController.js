@@ -10,20 +10,19 @@ module.exports = {
     }
   },
 
-  // createComment: async (req, res) => {
-  //   try {
-  //     const { slug } = req.params;
-  //     const commentData = {
-  //       ...req.body.comment,
-  //       articleSlug: slug,
-  //       authorId: req.user.id,
-  //     };
-  //     const comment = await commentService.createComment(commentData);
-  //     res.status(201).json({ comment });
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
+  createComment: async (req, res) => {
+    try {
+      const commentData = {
+        body: req.body.body,
+        articleId: req.body.articleId,
+        authorId: req.body.authorId,
+      };
+      const newComment = await commentService.createComment(commentData);
+      res.status(201).json(newComment);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 
   findCommentsByArticleSlug: async (req, res) => {
     try {
