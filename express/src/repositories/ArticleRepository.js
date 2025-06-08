@@ -64,4 +64,34 @@ module.exports = {
       where: { slug },
     });
   },
+
+  favoriteArticle: async (slug) => {
+    return await prisma.article.update({
+      where: { slug },
+      data: {
+        favoritesCount: {
+          increment: 1,
+        },
+        favorited: true,
+      },
+      include: {
+        tagList: true,
+      },
+    });
+  },
+
+  // unfavoriteArticle: async (slug, userId) => {
+  //   return await prisma.article.update({
+  //     where: { slug },
+  //     data: {
+  //       favoritesCount: {
+  //         decrement: 1,
+  //       },
+  //       favorited: false,
+  //     },
+  //     include: {
+  //       tagList: true,
+  //     },
+  //   });
+  // },
 };

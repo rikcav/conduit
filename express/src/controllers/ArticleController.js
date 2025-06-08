@@ -1,3 +1,4 @@
+const { favoriteArticle } = require("../repositories/ArticleRepository");
 const articleService = require("../services/ArticleService");
 
 module.exports = {
@@ -73,6 +74,21 @@ module.exports = {
       return res.status(204).send();
     } catch (error) {
       return res.status(500).json({ message: "Error deleting article", error });
+    }
+  },
+
+  favoriteArticle: async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const article = await articleService.favoriteArticle(slug);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      return res.status(200).json(article);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error favoriting article", error });
     }
   },
 };

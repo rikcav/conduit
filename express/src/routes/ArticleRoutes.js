@@ -7,5 +7,7 @@ module.exports = {
     app.get("/api/articles/:slug", controller.findArticleBySlug);
     app.put("/api/articles/:slug", controller.updateArticle);
     app.delete("/api/articles/:slug", controller.deleteArticle);
+    app.post("/api/articles/:slug/favorite", controller.favoriteArticle);
+    // app.delete("/api/articles/:slug/favorite", controller.unfavoriteArticle);
   },
 };

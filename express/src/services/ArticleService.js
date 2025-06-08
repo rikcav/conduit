@@ -64,4 +64,12 @@ module.exports = {
       throw error;
     }
   },
+
+  favoriteArticle: async (slug) => {
+    try {
+      return await articleRepository.favoriteArticle(slug);
+    } catch (error) {
+      throw error;
+    }
+  },
 };
