@@ -48,14 +48,9 @@ def user_list(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET", "PUT", "DELETE"])
+@api_view(["PUT"])
 def user_detail(request, pk):
-    # GET ONE
     user = get_object_or_404(User, pk=pk)
-
-    if request.method == "GET":
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == "PUT":
         serializer = UserSerializer(user, data=request.data, partial=True)
@@ -63,10 +58,6 @@ def user_detail(request, pk):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # DELETE
-    user.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["GET", "POST"])
@@ -141,15 +132,8 @@ def article_favorite(request, slug):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET", "POST"])
+@api_view(["POST"])
 def comment_list(request):
-    # GET ALL
-    if request.method == "GET":
-        comments = Comment.objects.all()
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # POST
     serializer = CommentSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -168,19 +152,7 @@ def comment_from_article_list(request, slug):
 
 @api_view(["GET", "PUT", "DELETE"])
 def comment_detail(request, pk):
-    # GET ONE
     comment = get_object_or_404(Comment, pk=pk)
-
-    if request.method == "GET":
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    if request.method == "PUT":
-        serializer = CommentSerializer(comment, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE
     comment.delete()
