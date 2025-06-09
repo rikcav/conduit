@@ -99,4 +99,13 @@ module.exports = {
       },
     });
   },
+
+  findArticleIdBySlug: async (slug) => {
+    const article = await prisma.article.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    return article?.id || null;
+  },
 };

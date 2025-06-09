@@ -1,48 +1,40 @@
 const commentRepository = require("../repositories/CommentRepository");
+const articleRepository = require("../repositories/ArticleRepository");
 
 module.exports = {
-  findAllComments: async () => {
+  findCommentsByArticle: async (slug) => {
     try {
-      return await commentRepository.findAllComments();
+      return await commentRepository.findCommentsByArticle(slug);
     } catch (error) {
       throw error;
     }
   },
 
-  createComment: async (data) => {
+  createComment: async (slug, data) => {
     try {
-      return await commentRepository.createComment(data);
+      const articleId = await articleRepository.findArticleIdBySlug(slug);
+      if (!articleId) {
+        throw new Error(`Article with slug '${slug}' not found`);
+      }
+
+      const commentData = {
+        ...data,
+        articleId,
+      };
+
+      return await commentRepository.createComment(commentData);
     } catch (error) {
       throw error;
     }
   },
 
-  findCommentsByArticleSlug: async (slug) => {
+  deleteComment: async (slug, id) => {
     try {
-      return await commentRepository.findCommentsByArticleSlug(slug);
-    } catch (error) {
-      throw error;
-    }
-  },
+      const article = await articleRepository.findArticleBySlug(slug);
+      if (!article) {
+        throw new Error("Article not found");
+      }
 
-  findCommentById: async (id) => {
-    try {
-      return await commentRepository.findCommentById(id);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  updateComment: async (id, data) => {
-    try {
-      return await commentRepository.updateComment(id, data);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  deleteComment: async (id) => {
-    try {
       return await commentRepository.deleteComment(id);
     } catch (error) {
       throw error;
