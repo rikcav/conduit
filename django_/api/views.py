@@ -132,28 +132,31 @@ def article_favorite(request, slug):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["POST"])
-def comment_list(request):
-    serializer = CommentSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["GET"])
-def comment_from_article_list(request, slug):
-    # GET ALL COMMENTS FROM ARTICLE
+@api_view(["GET", "POST"])
+def comment_list_create(request, slug):
     article = get_object_or_404(Article, slug=slug)
-    comments = article.comments.all()
-    serializer = CommentSerializer(comments, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # GET ALL COMMENTS FROM ARTICLE
+    if request.method == "GET":
+        comments = article.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # POST A COMMENT TO THE ARTICLE
+    elif request.method == "POST":
+        data = request.data.copy()
+        data["article"] = article.id
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET", "PUT", "DELETE"])
-def comment_detail(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
+@api_view(["DELETE"])
+def comment_delete(request, slug, pk):
+    article = get_object_or_404(Article, slug=slug)
+    comment = get_object_or_404(Comment, pk=pk, article=article)
 
-    # DELETE
     comment.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)

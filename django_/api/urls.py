@@ -6,9 +6,8 @@ from .views import (
     article_list,
     article_detail,
     article_favorite,
-    comment_list,
-    comment_from_article_list,
-    comment_detail,
+    comment_list_create,
+    comment_delete,
 )
 
 urlpatterns = [
@@ -21,7 +20,6 @@ urlpatterns = [
     path("articles/<str:slug>", article_detail, name="article-detail"),
     path("articles/<str:slug>/favorite", article_favorite, name="article-favorite"),
 
-    path("comments", comment_list, name="comment-list"),
-    path("articles/<str:slug>/comments", comment_from_article_list, name="comment-from-article-list"),
-    path("comments/<int:pk>", comment_detail, name="comment-detail"),
+    path("articles/<str:slug>/comments", comment_list_create),
+    path("articles/<str:slug>/comments/<int:pk>", comment_delete),
 ]
