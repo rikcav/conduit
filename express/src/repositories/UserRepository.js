@@ -14,22 +14,10 @@ module.exports = {
     return user;
   },
 
-  findUserById: async (id) => {
-    return await prisma.user.findUnique({
-      where: { id },
-    });
-  },
-
   updateUser: async (id, data) => {
     return await prisma.user.update({
       where: { id },
       data,
-    });
-  },
-
-  deleteUser: async (id) => {
-    return await prisma.user.delete({
-      where: { id },
     });
   },
 };

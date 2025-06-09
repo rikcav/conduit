@@ -21,25 +21,9 @@ module.exports = {
     }
   },
 
-  findUserById: async (id) => {
-    try {
-      return await userRepository.findUserById(id);
-    } catch (error) {
-      throw error;
-    }
-  },
-
   updateUser: async (id, data) => {
     try {
       return await userRepository.updateUser(id, data);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  deleteUser: async (id) => {
-    try {
-      return await userRepository.deleteUser(id);
     } catch (error) {
       throw error;
     }
