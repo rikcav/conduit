@@ -11,7 +11,9 @@ import com.project.conduit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -26,26 +28,24 @@ public class CommentService {
         this.articleRepository = articleRepository;
     }
 
-//    public CommentRO addCommentToArticle(String slug, CommentDTO commentDTO) {
-//        var article = articleRepository.findBySlug(slug)
-//                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
-//
-//        var comment = dtoToEntity(commentDTO);
-//        comment.setArticle(article);
-//
-//        var savedComment = commentRepository.save(comment);
-//
-//        return entityToRo(savedComment);
-//    }
+    public List<Comment> getCommentsByArticleSlug(String slug) {
+        var article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
 
-//    public CommentsRO getCommentsByArticleSlug(String slug) {
-//        var article = articleRepository.findBySlug(slug)
-//                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
-//
-//        var comments = commentRepository.findAllByArticleId(article.getId());
-//
-//        return entitiesToRo(comments);
-//    }
+        var comments = commentRepository.findAllByArticleId(article.getId());
+
+        return new ArrayList<>(comments);
+    }
+
+    public Comment addCommentToArticle(String slug, CommentDTO commentDTO) {
+        var article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+
+        var comment = dtoToEntity(commentDTO);
+        comment.setArticle(article);
+
+        return commentRepository.save(comment);
+    }
 
     public void deleteComment(String slug, Long commentId) {
         articleRepository.findBySlug(slug)
@@ -56,7 +56,7 @@ public class CommentService {
     }
 
     private Comment dtoToEntity(CommentDTO commentDTO) {
-        var author = userRepository.findByUsername(commentDTO.authorUsername())
+        var author = userRepository.findById(commentDTO.authorId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Comment comment = new Comment();
@@ -66,44 +66,4 @@ public class CommentService {
 
         return comment;
     }
-
-//    private CommentRO entityToRo(Comment comment) {
-//        CommentRO.AuthorDetails authorDetails = new CommentRO.AuthorDetails(
-//                comment.getAuthor().getUsername(),
-//                comment.getAuthor().getBio(),
-//                comment.getAuthor().getImage(),
-//                false
-//        );
-
-//        CommentRO.CommentDetails commentDetails = new CommentRO.CommentDetails(
-//                comment.getId(),
-//                comment.getCreatedAt(),
-//                comment.getUpdatedAt(),
-//                comment.getBody(),
-//                authorDetails
-//        );
-//        return new CommentRO(commentDetails);
-//    }
-
-//    private CommentsRO entitiesToRo(List<Comment> comments) {
-//        List<CommentRO.CommentDetails> commentDetailsList = comments.stream()
-//                .map(comment -> {
-//                    CommentRO.AuthorDetails authorDetails = new CommentRO.AuthorDetails(
-//                            comment.getAuthor().getUsername(),
-//                            comment.getAuthor().getBio(),
-//                            comment.getAuthor().getImage(),
-//                            false
-//                    );
-//
-//                    return new CommentRO.CommentDetails(
-//                            comment.getId(),
-//                            comment.getCreatedAt(),
-//                            comment.getUpdatedAt(),
-//                            comment.getBody(),
-//                            authorDetails
-//                    );
-//                }).toList();
-//
-//        return new CommentsRO(commentDetailsList);
-//    }
 }
