@@ -26,26 +26,26 @@ public class CommentService {
         this.articleRepository = articleRepository;
     }
 
-    public CommentRO addCommentToArticle(String slug, CommentDTO commentDTO) {
-        var article = articleRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+//    public CommentRO addCommentToArticle(String slug, CommentDTO commentDTO) {
+//        var article = articleRepository.findBySlug(slug)
+//                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+//
+//        var comment = dtoToEntity(commentDTO);
+//        comment.setArticle(article);
+//
+//        var savedComment = commentRepository.save(comment);
+//
+//        return entityToRo(savedComment);
+//    }
 
-        var comment = dtoToEntity(commentDTO);
-        comment.setArticle(article);
-
-        var savedComment = commentRepository.save(comment);
-
-        return entityToRo(savedComment);
-    }
-
-    public CommentsRO getCommentsByArticleSlug(String slug) {
-        var article = articleRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
-
-        var comments = commentRepository.findAllByArticleId(article.getId());
-
-        return entitiesToRo(comments);
-    }
+//    public CommentsRO getCommentsByArticleSlug(String slug) {
+//        var article = articleRepository.findBySlug(slug)
+//                .orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+//
+//        var comments = commentRepository.findAllByArticleId(article.getId());
+//
+//        return entitiesToRo(comments);
+//    }
 
     public void deleteComment(String slug, Long commentId) {
         articleRepository.findBySlug(slug)
@@ -67,43 +67,43 @@ public class CommentService {
         return comment;
     }
 
-    private CommentRO entityToRo(Comment comment) {
-        CommentRO.AuthorDetails authorDetails = new CommentRO.AuthorDetails(
-                comment.getAuthor().getUsername(),
-                comment.getAuthor().getBio(),
-                comment.getAuthor().getImage(),
-                false
-        );
+//    private CommentRO entityToRo(Comment comment) {
+//        CommentRO.AuthorDetails authorDetails = new CommentRO.AuthorDetails(
+//                comment.getAuthor().getUsername(),
+//                comment.getAuthor().getBio(),
+//                comment.getAuthor().getImage(),
+//                false
+//        );
 
-        CommentRO.CommentDetails commentDetails = new CommentRO.CommentDetails(
-                comment.getId(),
-                comment.getCreatedAt(),
-                comment.getUpdatedAt(),
-                comment.getBody(),
-                authorDetails
-        );
-        return new CommentRO(commentDetails);
-    }
+//        CommentRO.CommentDetails commentDetails = new CommentRO.CommentDetails(
+//                comment.getId(),
+//                comment.getCreatedAt(),
+//                comment.getUpdatedAt(),
+//                comment.getBody(),
+//                authorDetails
+//        );
+//        return new CommentRO(commentDetails);
+//    }
 
-    private CommentsRO entitiesToRo(List<Comment> comments) {
-        List<CommentRO.CommentDetails> commentDetailsList = comments.stream()
-                .map(comment -> {
-                    CommentRO.AuthorDetails authorDetails = new CommentRO.AuthorDetails(
-                            comment.getAuthor().getUsername(),
-                            comment.getAuthor().getBio(),
-                            comment.getAuthor().getImage(),
-                            false
-                    );
-
-                    return new CommentRO.CommentDetails(
-                            comment.getId(),
-                            comment.getCreatedAt(),
-                            comment.getUpdatedAt(),
-                            comment.getBody(),
-                            authorDetails
-                    );
-                }).toList();
-
-        return new CommentsRO(commentDetailsList);
-    }
+//    private CommentsRO entitiesToRo(List<Comment> comments) {
+//        List<CommentRO.CommentDetails> commentDetailsList = comments.stream()
+//                .map(comment -> {
+//                    CommentRO.AuthorDetails authorDetails = new CommentRO.AuthorDetails(
+//                            comment.getAuthor().getUsername(),
+//                            comment.getAuthor().getBio(),
+//                            comment.getAuthor().getImage(),
+//                            false
+//                    );
+//
+//                    return new CommentRO.CommentDetails(
+//                            comment.getId(),
+//                            comment.getCreatedAt(),
+//                            comment.getUpdatedAt(),
+//                            comment.getBody(),
+//                            authorDetails
+//                    );
+//                }).toList();
+//
+//        return new CommentsRO(commentDetailsList);
+//    }
 }
