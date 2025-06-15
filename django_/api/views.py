@@ -96,9 +96,14 @@ def article_list(request):
 
     serializer = ArticleSerializer(data=data)
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+        try:
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            return Response(
+                {"error": "Article with the same title or slug already exists"},
+                status=status.HTTP_409_CONFLICT,
+            )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -114,36 +119,54 @@ def article_detail(request, slug):
     if request.method == "PUT":
         serializer = ArticleSerializer(article, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except IntegrityError:
+                return Response(
+                    {"error": "Slug or title already exists"},
+                    status=status.HTTP_409_CONFLICT,
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # DELETE
-    article.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    if request.method == "DELETE":
+        article.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["POST", "DELETE"])
 def article_favorite(request, slug):
     # POST (FAVORITE)
     article = get_object_or_404(Article, slug=slug)
+
     if request.method == "POST":
-        article.favorited = True
-        article.favoritesCount += 1
-        article.save()
-        serializer = ArticleSerializer(article)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            article.favorited = True
+            article.favoritesCount += 1
+            article.save()
+            serializer = ArticleSerializer(article)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception:
+            return Response(
+                {"error": "Could not favorite the article"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     # DELETE (UNFAVORITE)
     if request.method == "DELETE":
-        if article.favoritesCount > 0:
-            article.favoritesCount -= 1
-            if article.favoritesCount == 0:
-                article.favorited = False
-        article.save()
-        serializer = ArticleSerializer(article)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            if article.favoritesCount > 0:
+                article.favoritesCount -= 1
+                if article.favoritesCount == 0:
+                    article.favorited = False
+            article.save()
+            serializer = ArticleSerializer(article)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception:
+            return Response(
+                {"error": "Could not unfavorite the article"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 @api_view(["GET", "POST"])
