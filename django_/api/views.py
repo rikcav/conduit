@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -41,11 +42,18 @@ def user_list(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # POST
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "POST":
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response(
+                    {"error": "Username or email already exists"},
+                    status=status.HTTP_409_CONFLICT,
+                )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["PUT"])
@@ -55,8 +63,14 @@ def user_detail(request, pk):
     if request.method == "PUT":
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except IntegrityError:
+                return Response(
+                    {"error": "Username or email already exists"},
+                    status=status.HTTP_409_CONFLICT,
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
