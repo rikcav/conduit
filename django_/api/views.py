@@ -184,9 +184,16 @@ def comment_list_create(request, slug):
         data = request.data.copy()
         data["article"] = article.id
         serializer = CommentSerializer(data=data)
+
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response(
+                    {"error": "Could not create comment due to a data conflict"},
+                    status=status.HTTP_409_CONFLICT,
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -195,5 +202,11 @@ def comment_delete(request, slug, pk):
     article = get_object_or_404(Article, slug=slug)
     comment = get_object_or_404(Comment, pk=pk, article=article)
 
-    comment.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    try:
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Exception:
+        return Response(
+            {"error": "Failed to delete comment"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
