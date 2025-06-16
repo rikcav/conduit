@@ -8,7 +8,7 @@ module.exports = {
     } catch (error) {
       return res
         .status(500)
-        .json({ message: "Error retrieving articles", error });
+        .json({ message: "Error retrieving articles", error: error.message });
     }
   },
 
@@ -29,7 +29,15 @@ module.exports = {
 
       return res.status(201).json(data);
     } catch (error) {
-      return res.status(500).json({ message: "Error creating article", error });
+      if (error.code === "23505" || error.message.includes("already exists")) {
+        return res
+          .status(409)
+          .json({ message: "Article with this title or slug already exists" });
+      }
+
+      return res
+        .status(500)
+        .json({ message: "Error creating article", error: error.message });
     }
   },
 
@@ -37,14 +45,16 @@ module.exports = {
     try {
       const slug = req.params.slug;
       const article = await articleService.findArticleBySlug(slug);
+
       if (!article) {
         return res.status(404).json({ message: "Article not found" });
       }
+
       return res.status(200).json(article);
     } catch (error) {
       return res
         .status(500)
-        .json({ message: "Error retrieving article", error });
+        .json({ message: "Error retrieving article", error: error.message });
     }
   },
 
@@ -59,20 +69,32 @@ module.exports = {
 
       return res.status(200).json(updated);
     } catch (error) {
-      return res.status(500).json({ message: "Error updating article", error });
+      if (error.code === "23505" || error.message.includes("already exists")) {
+        return res
+          .status(409)
+          .json({ message: "Article with this title or slug already exists" });
+      }
+
+      return res
+        .status(500)
+        .json({ message: "Error updating article", error: error.message });
     }
   },
 
   deleteArticle: async (req, res) => {
     try {
       const slug = req.params.slug;
-      const article = await articleService.deleteArticle(slug);
-      if (!article) {
+      const deleted = await articleService.deleteArticle(slug);
+
+      if (!deleted) {
         return res.status(404).json({ message: "Article not found" });
       }
+
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: "Error deleting article", error });
+      return res
+        .status(500)
+        .json({ message: "Error deleting article", error: error.message });
     }
   },
 
@@ -80,14 +102,16 @@ module.exports = {
     try {
       const slug = req.params.slug;
       const article = await articleService.favoriteArticle(slug);
+
       if (!article) {
         return res.status(404).json({ message: "Article not found" });
       }
+
       return res.status(200).json(article);
     } catch (error) {
       return res
         .status(500)
-        .json({ message: "Error favoriting article", error });
+        .json({ message: "Error favoriting article", error: error.message });
     }
   },
 
@@ -95,14 +119,16 @@ module.exports = {
     try {
       const slug = req.params.slug;
       const article = await articleService.unfavoriteArticle(slug);
+
       if (!article) {
         return res.status(404).json({ message: "Article not found" });
       }
+
       return res.status(200).json(article);
     } catch (error) {
       return res
         .status(500)
-        .json({ message: "Error unfavoriting article", error });
+        .json({ message: "Error unfavoriting article", error: error.message });
     }
   },
 };
